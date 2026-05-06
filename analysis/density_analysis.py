@@ -15,7 +15,7 @@ from utils.torch_utils import select_device
 from utils.dataloaders import LoadImages
 
 # CONFIG
-WEIGHTS = os.path.join(BASE_DIR, "weights", "best.pt")
+WEIGHTS = os.path.join(BASE_DIR, "weights", "yolov5_best_320.pt")
 VAL_IMAGES = os.path.join(BASE_DIR, "dataset_urban", "images", "val")
 
 IMG_SIZE = 320
