@@ -1,119 +1,133 @@
-# urban-object-detection-yolov5
-Urban object detection using YOLOv5 with scale-sensitive performance analysis on Pascal VOC 2007.
+# Urban Object Detection: YOLOv5 vs YOLOv8 Analysis
+
+This project presents a **controlled experimental study on urban object detection**, focusing on how model architecture and input resolution affect detection performance.
+
+The study compares **YOLOv5 and YOLOv8** on a filtered subset of the Pascal VOC 2007 dataset, with an emphasis on:
+
+* Scale sensitivity (small, medium, large objects)
+* Resolution impact (320 vs 640)
+* Per-class performance differences
+* Detection behavior trade-offs (recall vs localization)
+
+---
 
 ## Project Overview
 
-This project focuses on urban object detection using YOLOv5 on a filtered subset of the Pascal VOC 2007 dataset.
+Rather than building a detector only, this project is designed as an **analysis-driven pipeline**.
 
-Instead of training a detector only, the main goal was to perform controlled experiments to analyze:
+Key aspects:
 
-- Scale sensitivity (small, medium, large objects)
-- Per-class performance
-- Confusion patterns
-- Resolution impact on detection quality
+* Same dataset
+* Same training epochs
+* Same evaluation pipeline
+* Only controlled variables (model type & resolution)
 
 ---
 
 ## Dataset
 
-Dataset used:
+* Dataset: Pascal VOC 2007
+* Official: http://host.robots.ox.ac.uk/pascal/VOC/voc2007/
 
-Pascal VOC 2007  
-Official website: http://host.robots.ox.ac.uk/pascal/VOC/voc2007/
+Filtered urban classes:
 
-From the original 20 classes, only urban-related classes were selected:
+* bicycle
+* bus
+* car
+* motorbike
+* person
+* train
 
-- bicycle  
-- bus  
-- car  
-- motorbike  
-- person  
-- train  
+Final dataset:
 
-After filtering:
-
-- 2365 training images  
-- 606 validation images  
+* 2365 training images
+* 606 validation images
 
 ---
 
 ## Experiments
 
-Two controlled experiments were conducted:
+| Model  | Image Size | Epochs |
+| ------ | ---------- | ------ |
+| YOLOv5 | 320        | 40     |
+| YOLOv5 | 640        | 40     |
+| YOLOv8 | 320        | 40     |
+| YOLOv8 | 640        | 40     |
 
-| Experiment | Image Size | Epochs |
-|------------|------------|--------|
-| Exp 1      | 320        | 40     |
-| Exp 2      | 640        | 40     |
-
-Only image resolution was changed to ensure a fair comparison.
-
----
-
-## Overall Performance Comparison
-
-| Metric     | 320   | 640   |
-|------------|-------|-------|
-| mAP50      | 0.766 | 0.803 |
-| mAP50-95   | 0.478 | 0.492 |
-| Recall     | 0.646 | 0.716 |
-| Precision  | 0.874 | 0.849 |
-
-Increasing input resolution improved recall significantly.
+All experiments use identical conditions for fair comparison.
 
 ---
 
-## COCO-Style Size-Based Evaluation
+## Overall Performance
 
-Objects were categorized using COCO area thresholds:
-
-- Small  
-- Medium  
-- Large  
-
-Small object recall:
-
-0.27 → 0.56  
-(Over 100% improvement)
-
-This confirms that object detection performance is highly sensitive to input resolution.
+| Model  | Img Size | mAP50 | mAP50-95 | Recall | Precision |
+| ------ | -------- | ----- | -------- | ------ | --------- |
+| YOLOv5 | 320      | 0.766 | 0.478    | 0.646  | 0.874     |
+| YOLOv5 | 640      | 0.803 | 0.492    | 0.716  | 0.849     |
+| YOLOv8 | 320      | 0.757 | 0.526    | 0.630  | 0.846     |
+| YOLOv8 | 640      | 0.798 | 0.559    | 0.695  | 0.844     |
 
 ---
 
-## Per-Class Performance (Image Size = 640)
+## Key Findings
 
-| Class      | Precision | Recall | F1   |
-|------------|-----------|--------|------|
-| car        | 0.78      | 0.78   | 0.78 |
-| person     | 0.76      | 0.78   | 0.77 |
-| bicycle    | 0.71      | 0.72   | 0.71 |
-| motorbike  | 0.80      | 0.68   | 0.74 |
-| bus        | 0.62      | 0.76   | 0.68 |
-| train      | 0.59      | 0.77   | 0.67 |
+### 1️⃣ Resolution Impact
+
+* Increasing resolution improves **recall significantly**
+* Especially effective for **small objects**
+
+### 2️⃣ YOLOv5 vs YOLOv8
+
+* YOLOv5:
+
+  * Higher recall
+  * Detects more objects overall
+
+* YOLOv8:
+
+  * Higher mAP50-95
+  * More precise localization
 
 ---
 
-## Key Insights
+### 3️⃣ Small Object Detection
 
-- Small object detection improves dramatically with higher resolution.
-- Medium-sized objects generate most false positives.
-- Class imbalance affects precision in minority classes.
-- Resolution scaling is an effective improvement strategy for small objects.
+* Strong improvement from 320 → 640
+* Performance is highly resolution-dependent
+
+---
+
+### 4️⃣ Error Patterns
+
+* Medium-sized objects produce most false positives
+* Class imbalance affects minority classes
+
+---
+
+## Analysis Modules
+
+The project includes multiple evaluation pipelines:
+
+* Per-class evaluation
+* COCO-style size-based analysis
+* Object density analysis
+
+All results are saved in structured CSV format for reproducibility.
 
 ---
 
 ## Setup & Usage
 
-### 1️⃣ Clone the repository
+### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/MahdisHassani/urban-object-detection-yolov5.git
-cd urban-object-detection-yolov5
+git clone https://github.com/MahdisHassani/urban-object-detection-yolo-analysis.git
+cd urban-object-detection-yolo-analysis
 ```
 
 ---
 
-### 2️⃣ Install dependencies
+### 2️⃣ Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -121,96 +135,71 @@ pip install -r requirements.txt
 
 ---
 
-### 3️⃣ Download YOLOv5
+### 3️⃣ Prepare Dataset
 
-Clone YOLOv5 inside the project directory:
-
-```bash
-git clone https://github.com/ultralytics/yolov5.git
-```
-
----
-
-### 4️⃣ Download Dataset
-
-Download Pascal VOC 2007 from:
+Download Pascal VOC 2007:
 
 http://host.robots.ox.ac.uk/pascal/VOC/voc2007/
 
-Place it inside:
-
-```
-dataset/
-```
-
----
-
-### 5️⃣ Create Urban Subset
-
-Generate filtered urban dataset:
+Then run:
 
 ```bash
 python data_processing/create_urban_dataset.py
 ```
 
-This will create:
-
-```
-dataset_urban/
-```
-
 ---
 
-### 6️⃣ Run Density Analysis
+### 4️⃣ Train Models
 
-To analyze object density distribution:
-
-```bash
-python analysis/density_analysis.py
-```
-
-This script computes:
-- Average objects per image
-- Traffic level classification (low / medium / high)
-- Top crowded images
-
----
-
-### 7️⃣ Train the Model
-
-Example (Image size = 640):
+#### YOLOv5
 
 ```bash
+git clone https://github.com/ultralytics/yolov5.git
 cd yolov5
-python train.py --img 640 --batch 2 --epochs 40 --data ../configs/urban_dataset.yaml --weights yolov5n.pt
+python train.py --img 640 --epochs 40 --data ../configs/urban_dataset.yaml --weights yolov5n.pt
 ```
 
-After training, copy the best model to:
+#### YOLOv8
 
-```
-weights/best.pt
+```bash
+yolo detect train \
+  model=yolov8n.pt \
+  data=configs/urban_dataset.yaml \
+  imgsz=640 \
+  epochs=40
 ```
 
 ---
 
-### 8️⃣ Run Size-Based Evaluation
+### 5️⃣ Run Analysis
 
 ```bash
-python analysis/size_based_evaluation.py
-```
+python analysis/per_class_evaluation_yolov5.py
+python analysis/per_class_evaluation_yolov8.py
 
----
-
-### 9️⃣ Run Per-Class Evaluation
-
-```bash
-python analysis/per_class_evaluation.py
+python analysis/size_based_evaluation_yolov5.py
+python analysis/size_based_evaluation_yolov8.py
 ```
 
 ---
 
 ## Notes
 
-- Dataset and trained weights are not included due to size limitations.
-- Make sure folder structure is preserved.
-- Scripts use relative paths for portability.
+* Trained weights are not included due to size limitations
+* Place weights in:
+
+```
+weights/
+```
+
+* Scripts use relative paths for portability
+
+---
+
+## Conclusion
+
+This project demonstrates that:
+
+* Higher resolution improves detection performance
+* YOLOv5 and YOLOv8 exhibit different strengths
+* Model selection depends on application requirements
